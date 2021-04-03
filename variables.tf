@@ -1,6 +1,6 @@
 variable "resgrp" {
   type    = string
-  default = "k8s-install"
+  default = "aciBootcamp-install"
 }
 
 variable "region" {
@@ -10,12 +10,12 @@ variable "region" {
 
 variable "resgrptag" {
   type    = string
-  default = "k8sInstall"
+  default = "aciBootcampInstall"
 }
 
 variable "vnet" {
   type    = string
-  default = "k8sInstallVnet"
+  default = "aciBootcampInstallVnet"
 }
 
 variable "cidr" {
@@ -25,7 +25,7 @@ variable "cidr" {
 
 variable "subnetname" {
   type    = string
-  default = "K8sInstallSubnet"
+  default = "aciBootcampInstallSubnet"
 }
 
 variable "subnet" {
@@ -35,32 +35,32 @@ variable "subnet" {
 
 variable "publicip" {
   type    = string
-  default = "K8sPublicIP"
+  default = "aciBootcampPublicIP"
 }
 
 variable "sgname" {
   type    = string
-  default = "K8sSG"
+  default = "aciBootcampSG"
 }
 
 variable "netIntName" {
   type    = string
-  default = "K8sNetInt"
+  default = "aciBootcampNetInt"
 }
 
 variable "ipName" {
   type    = string
-  default = "K8sIP"
+  default = "aciBootcampIP"
 }
 
 variable "vmName" {
   type    = string
-  default = "K8sInstallVM"
+  default = "aciBootcampInstallVM"
 }
 
 variable "osDiskName" {
   type    = string
-  default = "K8sInstallOSDisk"
+  default = "aciBootcampInstallOSDisk"
 }
 
 variable "imagePublisher" {
