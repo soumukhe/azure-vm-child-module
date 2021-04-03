@@ -9,6 +9,8 @@
 
 # no creds
 *.pem
+*Key*
+*key*
 
 # terraformrc file
 terraform.rc
