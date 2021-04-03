@@ -16,6 +16,6 @@ output "adminUser" {
   value = var.adminUser
 }
 
-#output "PrivateKeyName" {
-#   value = var.privKey
-#}
+output "PrivateKeyName" {
+   value = var.privKey
+}
