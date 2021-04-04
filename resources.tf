@@ -60,6 +60,34 @@ resource "azurerm_network_security_group" "smterraformnsg" {
         destination_address_prefix = "*"
     }
 
+
+
+    security_rule {
+        name                       = "Radius"
+        priority                   = 1002
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Udp"
+        source_port_range          = "*"
+        destination_port_range     = "1812"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+    }
+
+    security_rule {
+        name                       = "ICMP"
+        priority                   = 1003
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Icmp"
+        source_port_range          = "*"
+        destination_port_range     = "*"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+    }
+
+
+
     tags = {
         environment = var.resgrptag
     }
@@ -171,17 +199,23 @@ resource "null_resource" "chmodprivkey" {
 }
 
 
-resource "null_resource" "update" {
+resource "null_resource" "update1" {
   depends_on = [azurerm_linux_virtual_machine.smterraformvm,azurerm_public_ip.smterraformpublicip,azurerm_network_interface_security_group_association.example]
+  triggers = {
+    build_number = timestamp()
+  }
 
   provisioner "local-exec" {
-    command = "sleep 120"
+    command = "sleep 30"
   }
 
   provisioner "remote-exec" {
     inline = [
       "sudo apt update -y",
-      "sudo apt upgrade -y"
+      "sudo apt upgrade -y",
+      "sudo echo net.ipv4.ip_forward=1 >> /etc/sysctl.conf",
+      "sudo sysctl  -p",
+      "sudo sysctl --system",
     ]
 
     connection {
@@ -192,5 +226,66 @@ resource "null_resource" "update" {
     }
   }
 }
+
+
+resource "null_resource" "update2" {
+  depends_on = [null_resource.update1]
+  triggers = {
+    build_number = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = "sleep 30"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt install docker.io -y",
+      "sudo systemctl start docker",
+      "sudo systemctl enable docker",
+      "sudo usermod -aG docker $USER",
+    ]
+
+    connection {
+      type = "ssh"
+      user = var.adminUser
+      private_key = file(var.privKey)
+      host = azurerm_public_ip.smterraformpublicip.ip_address
+    }
+  }
+}
+
+
+
+
+
+resource "null_resource" "update3" {
+  depends_on = [null_resource.update2]
+  triggers = {
+    build_number = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = "sleep 30"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt install docker-compose -y",
+      "sudo apt install freeradius-utils -y",
+      "git clone https://github.com/soumukhe/aciCloudABC-FreeRadius.git",
+      "cd aciCloudABC-FreeRadius",
+      "docker-compose up --build -d",
+    ]
+
+    connection {
+      type = "ssh"
+      user = var.adminUser
+      private_key = file(var.privKey)
+      host = azurerm_public_ip.smterraformpublicip.ip_address
+    }
+  }
+}
+
 
 
